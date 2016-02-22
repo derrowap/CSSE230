@@ -1,6 +1,3 @@
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.awt.*;
 
 import javax.swing.*;
@@ -20,7 +17,7 @@ import java.util.Random;
  */
 @SuppressWarnings("javadoc")
 public class VisualTreeFrame extends JFrame {
-	static RedBlackTree<Integer> t = null;
+	static RedBlackTree<Integer> b = null;
 	private Panel sp = new Panel();
 	int TX = 60;
 	int TY = 30;
@@ -28,8 +25,7 @@ public class VisualTreeFrame extends JFrame {
 
 	public VisualTreeFrame() {
 		super("MasteringTree!");
-		this.setSize(800, 500);// this joke never exists because of the size
-							   // change
+		this.setSize(800, 500);// this joke never exists because of the size change
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Container content = getContentPane();
 		content.setLayout(new BorderLayout());
@@ -38,24 +34,34 @@ public class VisualTreeFrame extends JFrame {
 				BorderFactory.createLoweredBevelBorder(), "Display Panel");
 		border.setTitleJustification(TitledBorder.LEFT);
 		this.sp.setBorder(border);
-		this.sp.setPreferredSize(new Dimension(800, 500));
+		this.sp.setPreferredSize(new Dimension(5000,5000));
 		JScrollPane scrollPane = new JScrollPane(sp); // added
-		// content.add(this.sp, BorderLayout.CENTER);
+//		content.add(this.sp, BorderLayout.CENTER);
 		content.add(scrollPane, BorderLayout.CENTER);
 		content.add(this.cs, BorderLayout.EAST);
 		setVisible(true);
 	}
 
 	public static void main(String[] args) {
-		t = new RedBlackTree<Integer>();
+		b = new RedBlackTree<Integer>();
 		
-		for(int i = 1; i < 200; i+=2) {
-			t.insert(i);
-		}
+		// Construct your tree HERE
+		b.insert(20);
+		b.insert(10);
+		b.insert(30);
+		b.insert(5);
+		b.insert(15);
+		b.insert(40);
+		b.insert(25);
+		b.insert(25);
+		b.insert(5);
+		b.insert(5);
+
 		
 		new VisualTreeFrame();
-	}
 
+	}
+	
 	class ControlPanel extends JPanel {
 		InputField In = new InputField();
 		AddButton add = new AddButton();
@@ -68,8 +74,8 @@ public class VisualTreeFrame extends JFrame {
 			this.setBorder(border);
 			this.setLayout(new FlowLayout());
 			// ///////////////slider
-			JSlider TXControl = new JSlider(SwingConstants.HORIZONTAL, 50,
-					1200, 60);
+			JSlider TXControl = new JSlider(SwingConstants.HORIZONTAL, 50, 1200,
+					60);
 			TXControl.addChangeListener(new SliderListener1());
 			TXControl.setMajorTickSpacing(50);
 			TXControl.setMinorTickSpacing(50);
@@ -85,12 +91,12 @@ public class VisualTreeFrame extends JFrame {
 			TYControl.setPaintTicks(true);
 			TYControl.setPaintLabels(true);
 			// //////////////////slider end
-
+			
 			this.add(TYControl);
 			this.add(new JLabel("Put in a Int:"));
 			this.add(this.In);
 			this.add(this.add);
-			this.add(new RandomButton());
+			this.add(new RemoveButton());
 			this.add(TXControl);
 
 		}
@@ -105,7 +111,6 @@ public class VisualTreeFrame extends JFrame {
 				}
 			}
 		}
-
 		class SliderListener2 implements ChangeListener {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -127,7 +132,7 @@ public class VisualTreeFrame extends JFrame {
 						try {
 							int a = Integer.parseInt(ControlPanel.this.In
 									.getText());
-							t.insert(a);
+							b.insert(a);
 							VisualTreeFrame.this.sp.repaint();
 							VisualTreeFrame.this.cs
 									.setText("#A Node "
@@ -142,18 +147,25 @@ public class VisualTreeFrame extends JFrame {
 			}
 		}
 
-		class RandomButton extends JButton {
-			public RandomButton() {
-				super("Random");
+		class RemoveButton extends JButton {
+			public RemoveButton() {
+				super("Remove");
 				this.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mousePressed(MouseEvent e) {
-						int a = new Random().nextInt(50);
-						t.insert(a);
-						VisualTreeFrame.this.sp.repaint();
-						VisualTreeFrame.this.cs.setText("#A Random Node \n  "
-								+ a + " is added");
-						// ControlPanel.this.In.disable();
+						try {
+							int a = Integer.parseInt(ControlPanel.this.In
+									.getText());
+							b.remove(a);
+							VisualTreeFrame.this.sp.repaint();
+							VisualTreeFrame.this.cs
+									.setText("#A Node "
+											+ a
+											+ " is removed\n Or it was not in the tree\n Press Next to Continue");
+						} catch (NumberFormatException nFE) {
+							VisualTreeFrame.this.cs
+									.setText("Error:\n Please Put a Integer \n in the textfield. :0");
+						}
 					}
 				});
 			}
@@ -174,8 +186,8 @@ public class VisualTreeFrame extends JFrame {
 		public void paintComponent(Graphics comp) {
 			super.paintComponent(comp);
 			Graphics2D comp2D = (Graphics2D) comp;
-			if (t.root != null) {
-				RedBlackTree.BinaryNode root = t.root;
+			if (b.root != null) {
+				RedBlackTree.BinaryNode root = b.root;
 				Node n = new Node(this.getWidth() / 2 - 12.5, 25,
 						(Integer) root.getElement());
 				n.drawOn(comp2D);
@@ -192,26 +204,20 @@ public class VisualTreeFrame extends JFrame {
 			double x = n.CenterX;
 			double y = n.CenterY;
 			if (par.getLeftChild() != null) {
-				Line2D l1 = new Line2D.Double(x + 12.5, y + 25, x - tx + 12.5,
-						y + ty);
+				Line2D l1 = new Line2D.Double(x+12.5, y +25, x - tx + 12.5, y
+						+ ty);
 				comp2D.draw(l1);
 				RedBlackTree.BinaryNode apar = par.getLeftChild();
-				n.translate(x - TRANSX, y + TRANSY,
-						(Integer) apar.getElement(),
-						(apar.getColor() == RedBlackTree.Color.RED) ? Color.RED
-								: Color.WHITE);
+				n.translate(x - TRANSX, y + TRANSY, (Integer) apar.getElement(), (apar.getColor()==RedBlackTree.Color.RED)?Color.RED:Color.WHITE);
 				n.drawOn(comp2D);
 				this.drawRec(n, apar, comp2D, tx / 2, ty);
 			}
 			if (par.getRightChild() != null) {
-				Line2D l1 = new Line2D.Double(x + 12.5, y + 25, x + tx + 12.5,
-						y + ty);
+				Line2D l1 = new Line2D.Double(x + 12.5, y +25, x + tx+12.5, y
+						+ ty);
 				comp2D.draw(l1);
 				RedBlackTree.BinaryNode bpar = par.getRightChild();
-				n.translate(x + TRANSX, y + TRANSY,
-						(Integer) bpar.getElement(),
-						(bpar.getColor() == RedBlackTree.Color.RED) ? Color.RED
-								: Color.WHITE);
+				n.translate(x + TRANSX, y + TRANSY, (Integer) bpar.getElement(), (bpar.getColor()==RedBlackTree.Color.RED)?Color.RED:Color.WHITE);
 				n.drawOn(comp2D);
 				this.drawRec(n, bpar, comp2D, tx / 2, ty);
 			}

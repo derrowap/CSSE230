@@ -200,7 +200,7 @@ public class PriorityQueue<E extends Comparable<? super E>> extends
 
 	/**
 	 * Returns the smallest child's index of the element specified by the given
-	 * index. Returns -1 there are no children to the parent element.
+	 * index. Returns -1 if there are no children to the parent element.
 	 * 
 	 * @param index
 	 *            - the parent element to compare the smallest children with

@@ -602,7 +602,7 @@ public class TestingInsertion {
 		points += 10;
 	}
 	
-	@Test
+	@Test  // Best time: 2.124
 	public void testingLogBehaviorOfInsert(){
 		RedBlackTree<Integer> t = new RedBlackTree<Integer>();
 		int nums = 2000000;
